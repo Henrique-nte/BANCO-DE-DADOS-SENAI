@@ -1,0 +1,62 @@
+-- CREATE DATABASE ONG --;
+-- USE ONG --;
+
+-- Voluntários: nome, CPF, telefone, e-mail, área atuação. --
+CREATE TABLE VOLUNTARIOS(
+	ID_VOLUNTARIO INT PRIMARY KEY AUTO_INCREMENT,
+	NOME VARCHAR(100),
+    CPF INT(10),
+    TELEFONE_VOLUNTARIO VARCHAR(15),
+    EMAIL_VOLUNTARIO VARCHAR(100),
+    AREA_ATUACAO VARCHAR(100)
+);
+
+--  Projetos: nome, descrição, data início, data fim, responsável.
+CREATE TABLE PROJETOS(
+	ID_PROJETO INT PRIMARY KEY AUTO_INCREMENT,
+	NOME VARCHAR(100),
+    DESCRICAO VARCHAR(100),
+    DATA_INICIO DATETIME,
+    DATA_FIM DATETIME,
+    RESPONSAVEL VARCHAR(100),
+    -- Um voluntário pode participar de vários projetos.
+    VOLUNTARIO INT,
+    -- CHAVES ESTRANGEIRAS --
+    FOREIGN KEY (VOLUNTARIO) REFERENCES VOLUNTARIOS(ID_VOLUNTARIO)
+);
+
+-- Participações: voluntário, projeto, função, horas dedicadas.
+CREATE TABLE PARTICIPACOES(
+	ID_PARTICIPACAO INT PRIMARY KEY AUTO_INCREMENT,
+	VOLUNTARIO INT,
+    PROJETO INT, 
+    FUNCAO VARCHAR(100),
+    HORAS_DEDICADAS TIME,
+    -- CHAVES ESTRANGEIRAS --
+    FOREIGN KEY (VOLUNTARIO) REFERENCES VOLUNTARIOS(ID_VOLUNTARIO),
+    FOREIGN KEY (PROJETO) REFERENCES PROJETOS(ID_PROJETO)
+);
+
+-- Doadores: nome, CPF/CNPJ, telefone, e-mail.
+CREATE TABLE DOADORES(
+	ID_DOADOR INT PRIMARY KEY AUTO_INCREMENT,
+	NOME_DOADOR VARCHAR (100),
+    CPF_DOADOR INT(11),
+    TELEFONE_DOADOR VARCHAR(15),
+    EMAIL_DOADOR VARCHAR(100)
+);
+
+-- Doações: doador, projeto, valor, data, forma pagamento.
+CREATE TABLE DOACOES(
+	DOADOR INT, -- FK
+    PROJETO INT, -- FK
+	VALOR BIGINT,
+    DATA_DOACAO DATE,
+    FORMA_PAGAMENTO ENUM("Cartão crédito", "Cartão débito", "Pix", "Dinheiro", "Cheque", "Boleto", "Tranferencia Bancaria", "Carteira digital"),
+    -- Uma doação deve estar vinculada a um projeto específico. --
+    PROJETO INT,
+    -- CHAVES ESTRANGEIRAS --
+    FOREIGN KEY (PROJETO) REFERENCES PROJETOS(ID_PROJETO),
+    -- Valor da doação deve ser maior que zero. --
+	CONSTRAINT VLR_MIN CHECK (VALOR >= 0)
+);
